@@ -3,8 +3,16 @@ dotenv.config();
 import config from "./config";
 import express, { Request, Response } from "express";
 import axios from "axios";
+import cors, { CorsOptions } from "cors";
 
 const app = express();
+
+const corsOptions: CorsOptions = {
+  origin: config.allowedOrigin,
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.use(cors(corsOptions));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("PONG");
@@ -17,7 +25,7 @@ const riotInstance = axios.create({
 });
 
 app.get("/matches/:puuid", async (req: Request, res: Response) => {
-  const riotUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${req.params.puuid}/ids`;
+  const riotUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${req.params.puuid}/ids?start=0&count=5`;
 
   const riotResponse = await riotInstance.get(riotUrl);
 
